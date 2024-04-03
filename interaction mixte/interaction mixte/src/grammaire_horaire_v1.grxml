@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="Horaire" version="1.0" xml:lang="fr">
+
+  <meta name="description" content="grammaire horaire"/>
+  <meta name="author" content="Islem BASSOUMI"/>
+  <meta name="copyright" content="3a sri"/>
+  
+  <rule id="Horaire" scope = "public">
+		   <item repeat = "0-1"> a </item>
+		   <one-of>
+		   	      <item> <ruleref uri="#heureExacte"/> </item>
+	              <item> <ruleref uri="#moment"/> </item>
+	       </one-of>
+	               <tag>       out.H = rules.latest().heure ;
+	                           out.M = rules.latest().minute ;
+                               out.text = rules.latest().text ;
+							   out.NTMN = rules.latest().nbMin;
+                   </tag>
+  </rule>
+
+   <!-- La variable flag est utilisee dans cette grammaire pour gerer les cas specifiques autour de minuit afin d'eviter la confusion. -->
+   
+   <!-- REGLE SI L UTILISATEUR ENTRE UNE HEURE LITTERALE -->
+<rule id= "heureExacte">
+    <one-of>
+        <item> 
+            <ruleref uri="#heure"/>
+            <item repeat="0-1"> 
+                <one-of>
+                    <item>heure</item>
+                    <item>heures</item>
+                </one-of>
+            </item>
+            <tag> 
+                out.text = rules.heure.text + ' heure(s) '; 
+                out.heure = rules.heure.nb; 
+                out.flag = rules.heure.flag; 
+            </tag>
+        </item>
+    </one-of>
+    <tag>out.minute = 0</tag>
+    <item repeat="0-1">
+        <ruleref uri="#gererMinute" />
+        <tag>
+            out.text = out.text + rules.gererMinute.text;
+            if (rules.gererMinute.operation == 'add') {
+                out.minute = out.minute + rules.gererMinute.nb;
+            } else if (rules.gererMinute.operation == 'subtract') {
+                out.minute = 60 - rules.gererMinute.nb; 
+                out.heure = (out.heure + 23) % 24;
+            }
+        </tag>
+    </item>
+    <tag>out.nbMin = 60 * out.heure + out.minute</tag>
+</rule>
+
+
+    <!-- REGLE SI L UTILISATEUR ENTRE UN MOMENT DE LA JOURNEE -->
+   <rule id= "moment">
+   <item>
+        <ruleref uri="#periode" />
+        <tag>out.text = meta.periode.text + " ";out.heure = rules.periode.heure</tag>
+        <tag>out.minute = 0</tag>
+        <item repeat="0-1">
+            <ruleref uri="#gererMinute" />
+            <tag>
+                out.text = out.text + rules.gererMinute.text;
+                if (rules.gererMinute.operation == 'add') {
+                    out.minute = out.minute + rules.gererMinute.nb;
+                } else if (rules.gererMinute.operation == 'subtract') {
+                    out.minute = out.minute + 60 - rules.gererMinute.nb; 
+                    out.heure = (out.heure + 23) % 24;
+                }
+            </tag>
+        </item>
+   </item>
+   <tag>out.nbMin = 60 * out.heure + out.minute</tag>
+</rule>
+
+
+  	<!-- REGLE POUR GERER LES MOMENTS DE LA JOURNEE-->
+   <rule id= "periode">
+			<tag>out.flag = 0</tag>
+			<one-of>
+					<item> midi <tag> out.heure = 12 ;  </tag> </item>
+					<item> minuit <tag> out.heure = 0 ; out.flag = 1 </tag> </item>
+
+			</one-of>
+			<tag> out.text = meta.current().text + " " </tag>
+	</rule>
+
+    <!-- REGLE POUR GERER LES HEURES-->
+   <rule id= "heure">
+			<tag>out.flag = 0</tag>
+			<one-of>
+					<item> une      <tag> out.nb = 1 ;  </tag> </item>
+					<item> deux      <tag> out.nb = 2 ;  </tag> </item>
+					<item> trois   <tag> out.nb = 3 ;  </tag> </item>
+					<item> quatre      <tag> out.nb = 4 ;  </tag> </item>
+					<item> cinq   <tag> out.nb = 5 ;  </tag> </item>
+					<item> six     <tag> out.nb = 6 ;  </tag> </item>
+					<item> sept   <tag> out.nb = 7 ;  </tag> </item>
+					<item> huit   <tag> out.nb = 8 ;  </tag> </item>
+					<item> neuf   <tag> out.nb = 9 ;  </tag> </item>
+					<item> dix   <tag> out.nb = 10 ;  </tag> </item>
+					<item> onze   <tag> out.nb = 11 ;  </tag> </item>
+					<item> douze   <tag> out.nb = 12 ;  </tag> </item>
+					<item> treize  <tag> out.nb = 13 ;  </tag> </item>
+					<item> quatorze   <tag> out.nb = 14 ;  </tag> </item>
+					<item> quinze   <tag> out.nb = 15 ;  </tag> </item>
+					<item> seize   <tag> out.nb = 16 ;  </tag> </item>
+                    <item> dix sept   <tag> out.nb = 17 ;  </tag> </item>
+                    <item> dix-sept   <tag> out.nb = 17 ;  </tag> </item>
+                    <item> dix huit   <tag> out.nb = 18 ;  </tag> </item>
+                    <item> dix-huit   <tag> out.nb = 18 ;  </tag> </item>
+                    <item> dix neuf   <tag> out.nb = 19 ;  </tag> </item>
+                    <item> dix-neuf   <tag> out.nb = 19 ;  </tag> </item>
+                    <item> vingt   <tag> out.nb = 20 ;  </tag> </item>
+					<item> vingt et une  <tag> out.nb = 21 ;  </tag> </item>
+                    <item> vingt deux<tag> out.nb = 22 ;  </tag> </item>					
+                    <item> vingt-deux<tag> out.nb = 22 ;  </tag> </item>
+					<item> vingt trois   <tag> out.nb = 23 ;  </tag> </item>					
+                    <item> vingt-trois   <tag> out.nb = 23 ;  </tag> </item>
+					<item> vingt quatre <tag> out.nb = 0 ; out.flag = 1 </tag> </item>
+                    <item> vingt-quatre <tag> out.nb = 0 ; out.flag = 1 </tag> </item>
+
+                    
+			</one-of>
+			<tag> out.text = meta.current().text + " " </tag>
+	</rule>
+	
+    <rule id="minute">
+    <one-of>
+        <item> une      <tag> out.nb = 1 ;  </tag> </item>
+        <item> deux     <tag> out.nb = 2 ;  </tag> </item>
+        <item> trois    <tag> out.nb = 3 ;  </tag> </item>
+        <item> quatre   <tag> out.nb = 4 ;  </tag> </item>
+        <item> cinq     <tag> out.nb = 5 ;  </tag> </item>
+        <item> six      <tag> out.nb = 6 ;  </tag> </item>
+        <item> sept     <tag> out.nb = 7 ;  </tag> </item>
+        <item> huit     <tag> out.nb = 8 ;  </tag> </item>
+        <item> neuf     <tag> out.nb = 9 ;  </tag> </item>
+        <item> dix      <tag> out.nb = 10 ;  </tag> </item>
+        <item> onze     <tag> out.nb = 11 ;  </tag> </item>
+        <item> douze    <tag> out.nb = 12 ;  </tag> </item>
+        <item> treize   <tag> out.nb = 13 ;  </tag> </item>
+        <item> quatorze <tag> out.nb = 14 ;  </tag> </item>
+        <item> quinze   <tag> out.nb = 15 ;  </tag> </item>
+        <item> seize    <tag> out.nb = 16 ;  </tag> </item>
+        <item> dix-sept <tag> out.nb = 17 ;  </tag> </item>
+        <item> dix sept <tag> out.nb = 17 ;  </tag> </item>
+        <item> dix-huit <tag> out.nb = 18 ;  </tag> </item>
+        <item> dix huit <tag> out.nb = 18 ;  </tag> </item>
+        <item> dix-neuf <tag> out.nb = 19 ;  </tag> </item>
+        <item> dix neuf <tag> out.nb = 19 ;  </tag> </item>
+        <item>
+            <one-of>
+                <item>vingt<tag> out.text = meta.current().text; out.nb = 20</tag></item>
+                <item>trente<tag> out.text = meta.current().text; out.nb = 30</tag></item>
+                <item>quarante<tag> out.text = meta.current().text; out.nb = 40</tag></item>
+                <item>cinquante<tag> out.text = meta.current().text; out.nb = 50</tag></item>
+            </one-of>
+            <item repeat="0-1">
+                <one-of>
+                    <item>et un <tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 1</tag></item>
+                    <item> deux<tag> out.text = out.text + " " + "deux"; out.nb = out.nb + 2</tag></item>
+					<item>trois <tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 3</tag></item>
+					<item>quatre <tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 4</tag></item>
+					<item>cinq<tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 5</tag></item>
+					<item>six<tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 6</tag></item>
+					<item>sept<tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 7</tag></item>
+					<item>huit <tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 8</tag></item>
+					<item>neuf <tag> out.text = out.text + " " + meta.current().text; out.nb = out.nb + 9</tag></item>
+                </one-of>
+            </item>
+        </item>
+    </one-of>
+    <tag> out.text = meta.current().text + " " </tag>
+</rule>
+
+
+<!-- REGLE POUR GERER L'AJOUT ET LA SOUSTRACTION DE MINUTES-->
+<rule id="gererMinute">
+    <one-of>
+        <item>
+            <tag>out.operation = 'add';</tag>
+            <item repeat="0-1">
+                <item>et <tag>out.text = (out.text || "") + 'et'</tag></item>
+            </item>
+            <item>
+                <one-of>
+                    <item>
+                        <ruleref uri="#minute"/>
+                        <tag> out.text = rules.minute.text; out.nb = rules.minute.nb</tag>
+                        <item repeat="0-1"> minutes </item>
+                        <item repeat="0-1"> minute </item>
+                    </item>
+                    <item> demi <tag>out.text = meta.current().text; out.nb = 30</tag> </item>
+                    <item> quart <tag>out.text = meta.current().text; out.nb = 15</tag> </item>
+                </one-of>
+            </item>
+        </item>
+        <item>
+            <tag>out.operation = 'subtract';</tag>
+            <item>moins <tag>out.text = 'moins';</tag> </item>
+            <one-of>
+                <item>
+                    <ruleref uri="#minute"/>
+                    <tag>out.text = out.text + " " + rules.minute.text; out.nb = rules.minute.nb</tag>
+                </item>
+                <item> demie <tag>out.text = meta.current().text; out.nb = 30</tag> </item>
+                <item> le quart <tag>out.text = meta.current().text; out.nb = 15</tag> </item>
+            </one-of>
+        </item>
+    </one-of>
+</rule>
+
+
+</grammar>

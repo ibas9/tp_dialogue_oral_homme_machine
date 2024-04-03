@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" xml:lang="fr" root="localisation">
+
+<meta name="description" content="Grammaire pour le lieu de reservation"/>
+<meta name="author" content="Islem BASSOUMI"/>
+<meta name="copyright" content="3a sri"/>
+
+<rule id="localisation" scope="public">
+    <item repeat="0-1">
+        <ruleref uri="#phraseIntroductive"/>
+    </item>
+
+    <!-- La salle est toujours requise -->
+    <item>
+        <ruleref uri="#determinationSalle"/>
+    </item>
+    <tag>out.salle = rules.latest().salle;</tag>
+
+    <!-- Le bâtiment est optionnel -->
+    <item repeat="0-1">
+        <ruleref uri="#identificationBatiment"/>
+        <tag>out.batiment = rules.latest().batiment;</tag>
+    </item>
+</rule>
+
+<rule id="phraseIntroductive">
+    <one-of>
+        <item>ca sera a la salle</item>
+        <item>a la salle</item>
+        <item>la salle</item>
+        <item>pour la salle</item>
+        <item>je dois me rendre a</item>
+        <item>je dois me rendre a la salle</item>
+        <item>direction</item>
+        <item>salle</item>
+    </one-of>
+</rule>
+
+<rule id="determinationSalle">
+    <one-of>
+        <item>101<tag>out.salle = meta.current().text;</tag></item>
+        <item>102<tag>out.salle = meta.current().text;</tag></item>
+        <item>103<tag>out.salle = meta.current().text;</tag></item>
+    </one-of>
+</rule>
+
+<rule id="identificationBatiment">
+    <one-of>
+        <item>du U1<tag>out.batiment = meta.current().text;</tag></item>
+        <item>du U2<tag>out.batiment = meta.current().text;</tag></item>
+        <item>du U3<tag>out.batiment = meta.current().text;</tag></item>
+        <item>U1<tag>out.batiment = meta.current().text;</tag></item>
+        <item>U2<tag>out.batiment = meta.current().text;</tag></item>
+        <item>U3<tag>out.batiment = meta.current().text;</tag></item>
+    </one-of>
+</rule>
+</grammar>

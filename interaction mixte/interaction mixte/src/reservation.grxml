@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="reservation" xml:lang="fr">
+
+<meta name="description" content="grammar for room reservation"/>
+<meta name="author" content="Islem BASSOUMI"/>
+<meta name="copyright" content="3a SRI"/>
+
+<rule id="politesse1">
+  <item repeat="0-1"> s'il vous plait </item>
+  <item repeat="0-1">
+    Je
+    <one-of>
+      <item> veux </item>
+      <item> souhaiterais </item>
+    </one-of>
+  </item>
+</rule>
+
+<rule id="politesse2">
+  <item repeat="0-1">
+    <one-of>
+      <item> s'il vous plait </item>
+      <item> merci </item>
+    </one-of>
+  </item>
+</rule>
+
+<rule id="reservation" scope="public">
+  <tag>out.reservation = new Object;</tag>
+  
+  <ruleref uri="#politesse1"/>
+  <item repeat="1-">
+    <one-of>
+      <item>
+        <ruleref uri="#demande"/>
+        <tag>out.demande = rules.demande</tag>
+      </item>
+
+
+      <item>
+      <ruleref uri="grammaire_salle.grxml#localisation"/>
+      <tag>out.salle = rules.localisation.salle;</tag>
+      <tag>if (typeof rules.localisation.batiment !== "undefined") out.batiment = rules.localisation.batiment;</tag>
+      </item>
+
+
+      <item>
+        <ruleref uri="grammaire_dates_v3.grxml#Date"/>
+        <tag>out.nb_jour = rules.Date.nb_jour;</tag>
+        <tag>out.num_mois = rules.Date.num_mois;</tag>
+        <tag>out.nb_annee = rules.Date.nb_annee;</tag>
+      </item>
+
+
+
+      <item>
+        <ruleref uri="grammaire_horaire_v1.grxml#Horaire"/>
+        <tag>out.heure = rules.Horaire.H;</tag>
+        <tag>out.minute = rules.Horaire.M;</tag>
+      </item>
+
+      <item>
+        <ruleref uri="grammaire_objet_reunion.grxml#objet_reservation"/>
+        <tag>out.objet = rules.objet_reservation.objet;</tag>
+      </item>
+
+
+    </one-of>
+  </item>
+  <ruleref uri="#politesse2"/>
+</rule>
+
+<rule id="demande">
+  <one-of>
+    <item> demander une reservation </item>
+    <item> reserver </item>
+  </one-of>
+</rule>
+
+
+</grammar>
