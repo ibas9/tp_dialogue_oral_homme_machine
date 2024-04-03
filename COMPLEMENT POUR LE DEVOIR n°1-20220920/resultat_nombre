@@ -1,0 +1,44 @@
+
+OptimTalk Grammar Tester (version 1.10)
+========================
+Copyright (c) 2004-2010 OptimSys, s.r.o., Czech Republic
+  http://www.optimsys.cz
+
+Testing grammar file:/C:/Users/isabelle/Documents/OPTIMTALK_NEW/grammaire_nombre_v3.grxml
+Enter an utternace or press Enter to finish: 
+deux mille quatorze
+Semantic result: {
+  nb: 2014,
+  text: "deux mille quatorze"
+}
+Enter an utternace or press Enter to finish: 
+dix neuf
+Semantic result: {
+  nb: 19,
+  text: "dix neuf"
+}
+Enter an utternace or press Enter to finish: 
+dix-neuf
+DOES NOT MATCH
+Enter an utternace or press Enter to finish:
+trente
+Semantic result: {
+  nb: 30,
+  text: "trente"
+}
+Enter an utternace or press Enter to finish: 
+douze
+Semantic result: {
+  nb: 12,
+  text: "douze"
+}
+Enter an utternace or press Enter to finish: 
+quarante-trois
+DOES NOT MATCH
+Enter an utternace or press Enter to finish: 
+quarante trois
+Semantic result: {
+  nb: 43,
+  text: "quarante trois"
+}
+Enter an utternace or press Enter to finish: 

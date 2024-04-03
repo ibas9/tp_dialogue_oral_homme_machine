@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Gestion agenda version 2"/>
+<meta name="author" content="Islem BASSOUMI"/>
+<meta name="copyright" content="3a SRI"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+
+<catch event="exit">
+        <prompt> Merci d'avoir utilise notre plateforme. A tres bientot. </prompt>  
+        <exit/>
+		</catch>
+
+
+<link event="exit">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+
+
+<form id="agenda">
+
+<var name="reponse" />
+<var name="message_confirm" />
+<var name="constructed_date" expr="''"/>
+<var name="constructed_heure" expr="''"/>
+<var name="constructed_duree" expr="''"/>
+<var name="constructed_localisation" expr="''"/>
+
+<catch event="exit_app">
+    <assign name="exit_app" expr="true"/>
+</catch>
+
+
+<script>
+		var now = new Date(2010, 11, 9, 15, 30, 0, 0);
+		var date_choisie = new Date();
+		var mode_trace ="True";
+</script>
+
+<block>
+   	Bienvenue sur le service de gestion de votre agenda. 
+        Aujourd'hui nous sommes le <value expr="now.toString()" />
+   	<value expr="now.valueOf()" />
+</block>
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- GERER NUM D ABONNE -->
+<field name="num_abonne">
+    <prompt> Quel est votre numero d'abonne ? </prompt>
+    <grammar src="grammaire_num_ab_v2.grxml" type="application/srgs+xml"/>
+    <help> Donner un nombre compris entre 1 et 2500 </help>
+    <noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
+    <nomatch> Je n'ai pas compris. Pouvez-vous me donner un numero d'abonne valide S.V.P ? </nomatch>
+    <filled>
+        <if cond="num_abonne.nb &lt; 1 || num_abonne.nb &gt; 2500">
+            <prompt> Vous devez entrer un numero valide compris entre 1 et 2500. Veuillez reessayer. </prompt>
+            <clear namelist="num_abonne" />
+        <else/>
+            Votre numero d'abonne est le <value expr="num_abonne.text" /> 
+            <if cond="mode_trace=='True'">
+                TRACE VALEUR  <value expr="num_abonne.nb" />
+            </if>
+        </if>
+    </filled>
+</field>
+<!-- CONFIRMATION NUM ABONNE  -->
+<var name = "number" expr = "'confirmez vous votre numero abonne?'"/>
+<subdialog name="confirm_generique" src="#confirmation_generale">
+	<param name ="phraseSpecifique" expr="number"/>
+</subdialog>
+	
+<block>
+	  <if cond="confirm_generique.confirmation=='True'">
+		 <assign name="message_confirm" expr="'TRACE Numero confirme'" />
+	 <else/>
+		 <assign name="message_confirm" expr="'TRACE Numero non confirme'" />
+		 <clear namelist="num_abonne" />
+	 </if>
+	 <!-- Comportement si le mode TRACE est active --> 
+
+	 <if cond="mode_trace=='True'">
+	   TRACE Reponse <value expr="message_confirm" />
+	 </if>
+</block>
+
+<block>
+    Numero d abonne enregistre.
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<block>
+       <!-- Simulation autorisation d'acces -->
+	Veuillez patienter ... Nous nous connectons a la base abonne....
+        Bonjour Monsieur Dupont. Vous pouvez maintenant acceder a votre agenda !
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- GERER LA DATE DE RESERVATION  -->
+<field name="date_reservation">
+
+	 <prompt> Quand voulez-vous reserver une salle ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_dates_v3.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+         <help> Vous pouvez dire la date en format 'jour mois annee', par exemple, 'mardi deux octobre deux mille'. </help>
+    <noinput> Je n'ai pas entendu. Pouvez-vous preciser la date de votre reservation ? </noinput>
+    <nomatch> Je n'ai pas compris. Pouvez-vous me donner une date valide S.V.P ? </nomatch>
+    
+
+</field>
+<!-- CONFIRMATION IMPLICITE DATE  -->
+  <field name="confirm_date">
+		<prompt> 
+	         Vous souhaitez reserver une salle pour le <value expr="date_reservation.nb_jour.toString() + '/' + date_reservation.num_mois.toString() + '/' + date_reservation.nb_annee.toString()"/>
+			 A quelle heure?
+		</prompt>
+         <!-- Appel a une grammaire externe -->
+         <grammar src="confirmer_Date_donner_Horaire.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Vous pouvez dire l'heure en format convenable comprise entre 7h30 et 19h30, par exemple, 'douze heures dix' ou 'midi trente'.. </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous preciser l'heure de votre reservation? </noinput>
+         <nomatch> Je n'ai pas compris. Pouvez-vous me donner une date valide S.V.P ? si vous souhaitez changer la date, veuillez entrer non + nouvelle date ou simplement non. </nomatch>
+
+         <filled>
+                 <if cond="confirm_date.reponse=='dateConfirmee+heureEnregistree'">
+                     <assign name="message_confirm" expr="'TRACE date confirme'" />
+					 <assign name="message_confirm" expr="'TRACE horaire confirme'" />
+					  <if cond="(confirm_date.heure == 7 &amp;&amp; confirm_date.minute &lt; 30) || 
+            (confirm_date.heure == 19 &amp;&amp; confirm_date.minute &gt; 30) || 
+            (confirm_date.heure &lt; 7) || 
+            (confirm_date.heure &gt; 19)">            
+          <prompt> Je suis desole, les reservations sont uniquement possibles de 7h30 a 19h30. Veuillez indiquer une nouvelle heure pour votre reservation. </prompt>
+            <clear namelist="confirm_date" />
+					 <else/>
+						<value expr ="'Votre heure de reservation est '+confirm_date.heure.toString()+'heure(s)'+ confirm_date.minute.toString()+'minute(s)' "/>
+					</if>
+
+                 <elseif cond="confirm_date.reponse == 'AncienneDateAnnulle+nouvelleDateEnregistree'"/>
+				     <assign name="date_reservation.nb_jour" expr="confirm_date.numJour" />
+					 <assign name="date_reservation.num_mois" expr="confirm_date.numMois" />
+					 <if cond="confirm_date.numAnnee != 0">	
+						<assign name="date_reservation.nb_annee" expr="confirm_date.numAnnee" />
+					 <else/>
+						<assign name="date_reservation.nb_annee" expr="date_choisie.getUTCFullYear() " />
+					 </if>
+					 <clear namelist="confirm_date" />
+				
+                <else/>
+					 D'accord, veuillez choisir S.V.P une nouvelle date de reservation
+                     <assign name="message_confirm" expr="'TRACE Date non confirme'" />
+                     <clear namelist="date_reservation confirm_date" />
+                 </if>
+         </filled>
+
+</field>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- CONFIRMATION HORAIRE  -->
+<var name = "Horaire" expr = "'Confirmez vous l horaire de reservation ?'"/>
+	<subdialog name="confirm_horaire" src="#confirmation_generale">
+	<param name ="phraseSpecifique" expr="Horaire"/>
+</subdialog>
+<block>
+	  <if cond="confirm_horaire.confirmation=='True'">
+		 <assign name="message_confirm" expr="'TRACE Horaire confirme'" />
+	 <else/>
+		 <assign name="message_confirm" expr="'TRACE Horaire non confirme'" />
+		 <clear namelist="confirm_date confirm_horaire" />
+	 </if>
+	 <if cond="mode_trace=='True'">
+	   TRACE Reponse <value expr="message_confirm" />
+	 </if>
+</block>
+
+<block>
+    Heure de reservation enregistree.
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- GERER DUREE  -->
+<field name="duree_reservation">
+    <prompt>Quelle est la duree de votre reservation?</prompt>
+    
+    <grammar src="grammaire_horaire_v1.grxml" type="application/srgs+xml" />
+    
+    <!-- Gestion des erreurs -->
+    <help>Vous pouvez indiquer la duree en heures et minutes, elle ne doit pas depasser trois heures. Par exemple, vous pouvez dire 'deux heures trente'.</help>
+    <noinput>Je n'ai pas entendu votre reponse. Pouvez-vous preciser la duree de votre reservation?</noinput>
+    <nomatch>Je n'ai pas compris. Pouvez-vous indiquer une duree valide S.V.P ?</nomatch>
+    
+    <filled>
+        <!-- Verification si la duree de reservation depasse les 3 heures -->
+        <if cond="duree_reservation.H &gt; 3 || (duree_reservation.H == 3 &amp;&amp; duree_reservation.M &gt; 0)">
+            <prompt>Je suis desole, la duree de la reservation ne peut pas depasser trois heures. Veuillez indiquer une nouvelle duree.</prompt>
+            <clear namelist="duree_reservation" />
+        <else/>
+            <assign name="constructed_duree" expr="duree_reservation.H + ' heure(s) ' + (duree_reservation.M > 0 ? duree_reservation.M + ' minute(s)' : '')"/>
+            <assign name="message_confirm" expr="'TRACE Duree de reservation: ' + constructed_duree" />
+        </if>
+    </filled>
+</field>
+<!-- CONFIRMATION HORAIRE   -->
+<var name = "Duree" expr = "'Confirmez vous la duree de votre reservation ?'"/>
+	<subdialog name="confirm_duree" src="#confirmation_generale">
+	<param name ="phraseSpecifique" expr="Duree"/>
+</subdialog>
+
+<block>
+	  <if cond="confirm_duree.confirmation=='True'">
+		 <assign name="message_confirm" expr="'TRACE Duree confirme'" />
+	 <else/>
+		 <assign name="message_confirm" expr="'TRACE Duree non confirme'" />
+		 <clear namelist="duree_reservation confirm_duree" />
+	 </if>
+	 <!-- Comportement si le mode TRACE est active --> 
+
+	 <if cond="mode_trace=='True'">
+	   TRACE Reponse <value expr="message_confirm" />
+	 </if>
+</block>
+
+
+<block>
+    Duree de reservation enregistree.
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- GERER LA LOCALISATION DE RESERVATION -->
+<field name="endroit_reservation">
+    <prompt>Quelle est la salle que vous souhaitez reserver?</prompt>
+
+    <grammar src="grammaire_salle.grxml" type="application/srgs+xml"/>
+
+    <!-- Gestion des erreurs -->
+    <help>Vous pouvez indiquer le nom de la salle que vous souhaitez reserver. Si necessaire, mentionnez egalement le batiment. par exemple, '101' ou 'la salle 101 U3'..</help>
+    <noinput>Je n'ai pas entendu votre reponse. Pouvez-vous preciser la salle que vous souhaitez reserver?</noinput>
+    <nomatch>Je n'ai pas compris. Pouvez-vous repeter le nom de la salle que vous souhaitez reserver S.V.P ?</nomatch>
+
+    <!-- Comportement du systeme une fois ce champ rempli -->
+    <filled>
+        <if cond="endroit_reservation.batiment">
+            <!-- Si la propriete 'batiment' existe, nous l'utilisons. -->
+            <assign name="constructed_localisation" expr="'la salle ' + endroit_reservation.salle + ' du batiment ' + endroit_reservation.batiment"/>
+        <else/>
+            <!-- Sinon, cela signifie que seul le nom de la salle a ete fourni. -->
+            <assign name="constructed_localisation" expr="'la salle ' + endroit_reservation.salle"/>
+        </if>
+
+        <prompt>Vous avez choisi de reserver <value expr="constructed_localisation"/>.</prompt>
+
+    </filled>
+</field>
+<!-- CONFIRMATION LOCALISATION   -->
+<var name = "Localisation" expr = "'Confirmez vous la localisation de votre reservation ?'"/>
+	<subdialog name="confirm_endroit_reservation" src="#confirmation_generale">
+	<param name ="phraseSpecifique" expr="Localisation"/>
+</subdialog>
+
+<block>
+	  <if cond="confirm_endroit_reservation.confirmation=='True'">
+		 <assign name="message_confirm" expr="'TRACE Endroit de reservation confirme'" />
+	 <else/>
+		 <assign name="message_confirm" expr="'TRACE Endroit de reservation non confirme'" />
+		 <clear namelist="endroit_reservation confirm_endroit_reservation" />
+	 </if>
+	 <!-- Comportement si le mode TRACE est active --> 
+
+	 <if cond="mode_trace=='True'">
+	   TRACE Reponse <value expr="message_confirm" />
+	 </if>
+</block>
+
+<block>
+    Localisation de reservation enregristree.
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+
+
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- GERER L OBJET DE RESERVATION -->
+<field name="objet_reservation">
+
+		 <prompt> Quel est l'objet de votre reservation? </prompt>
+
+			 <!-- Appel a une grammaire externe -->
+		 <grammar src="grammaire_objet_reunion.grxml" type="application/srgs+xml"/>
+
+			 <!-- Gestion des erreurs -->
+			 <help> Veillez renseigner l'objet de la reservation. par exemple, 'reunion' ou 'non specifie' si vous ne souhaitez pas preciser l objet.. </help>
+			 <noinput> Je n'ai pas entendu. Pouvez-vous me preciser l'objet de la reservation? </noinput>
+		    <nomatch> Je n'ai pas compris. Pouvez-vous me preciser l'objet de la reservation S.V.P? </nomatch>
+
+			 <!-- Comportement du systeme une fois ce champ rempli -->
+		 <filled>
+				<if cond="objet_reservation.objet == 'non specifie'">
+					<value expr="'L objet de la reservation n a pas ete specifie ' " /> 
+				<else/>
+					<value expr="'L objet de la reservation est : '+ objet_reservation.objet " /> 
+				</if>
+				
+		 </filled>
+	</field>
+    <!-- CONFIRMATION OBJET   -->
+<var name = "Objet" expr = "'Confirmez vous l objet de votre reservation ?'"/>
+	<subdialog name="confirm_objet_reservation" src="#confirmation_generale">
+	<param name ="phraseSpecifique" expr="Objet"/>
+</subdialog>
+
+<block>
+	  <if cond="confirm_objet_reservation.confirmation=='True'">
+		 <assign name="message_confirm" expr="'TRACE Objet confirme'" />
+	 <else/>
+		 <assign name="message_confirm" expr="'TRACE Objet non confirme'" />
+		 <clear namelist="objet_reservation confirm_objet_reservation" />
+	 </if>
+	 <!-- Comportement si le mode TRACE est active --> 
+
+	 <if cond="mode_trace=='True'">
+	   TRACE Reponse <value expr="message_confirm" />
+	 </if>
+</block>
+
+
+<block>
+    Objet de reservation enregirstre.
+</block>
+<!-- ///////////////////////////////////////////////////////////   -->
+
+<block>
+	Recapitulatif :
+	<value expr="'Numero d abonne : ' + num_abonne.nb" />
+	<value expr="'Salle de la reservation : ' + constructed_localisation" />
+	<value expr="'Date de la reservation: ' + date_reservation.nb_jour.toString() + '/' + date_reservation.num_mois.toString() + '/' + date_reservation.nb_annee.toString()" />
+	<value expr="'Objet de la reservation: ' + objet_reservation.objet" />
+	<value expr="'Duree de la reservation: ' + constructed_duree" />
+	Au revoir.
+	
+</block>
+
+
+<!-- ///////////////////////////////////////////////////////////   -->
+<!-- ADMINISTRATION DES SOUS DIALOGUE   -->
+</form>
+<form id="confirmation_generale">
+	<var name="phraseSpecifique"/>
+	<var name= "confirmation"/>
+
+	<field name="confirm">
+		 <prompt><value expr="phraseSpecifique"/> </prompt>
+		 <grammar src="grammaire_act_lang_confirmation_v2.grxml" type="application/srgs+xml" />
+	
+		 <help> Veuillez repondre par oui ou non S.V.P. </help>
+		 <noinput> Je n'ai pas entendu. Pouvez-vous repeter S.V.P? </noinput>
+		 <nomatch> Je n'ai pas compris. Veuillez repondre par oui ou non S.V.P? </nomatch>
+		 <filled>
+			 <assign name="confirmation" expr="confirm" />
+		 </filled>
+	</field>
+	<block>
+		<return namelist = "confirmation"/>
+	</block>
+
+</form>
+</vxml>

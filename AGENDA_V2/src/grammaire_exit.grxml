@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="mainRule" xml:lang="fr">
+
+    <meta name="description" content="Liste Quit"/>
+    <meta name="author" content="Islem"/>
+    <meta name="copyright" content="3asri"/>
+
+    <!-- Expression Principale -->
+    <rule id="mainRule" scope="public">
+        <item repeat="0-1"> 
+            <one-of>
+                <item> bonjour </item>
+                <item> salut </item>
+            </one-of>
+        </item>
+        <item repeat="0-1"> 
+            <one-of>
+                <item> je veux </item>
+                <item> je voudrais </item>
+                <item> je souhaite </item>
+            </one-of>
+        </item>
+        <one-of>
+            <item> partir </item>
+            <item> fermer </item>
+            <item> quitter </item>
+            <item> exit </item>
+            <item> au revoir </item>
+            <item> quit </item>
+        </one-of>
+        <item repeat="0-1"> 
+            <one-of>
+                <item> maintenant </item>
+                <item> s'il vous plaît </item>
+                <item> svp </item>
+				<item> s'il te plaît </item>
+				<item> stp </item>
+            </one-of>
+        </item>
+        <item repeat="0-1"> 
+            <one-of>
+                <item> merci beaucoup </item>
+                <item> merci </item>
+                <item> merci en avance </item>
+            </one-of>
+        </item>
+    </rule>
+</grammar>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="objet_reservation" xml:lang="fr-FR">
+
+<meta name="description" content="Grammaire pour les objets de reservation"/>
+<meta name="author" content="Islem BASSOUMI"/>
+<meta name="copyright" content="3a sri"/>
+
+<rule id="objet_reservation" scope="public">
+    <one-of>
+        <item>
+            <item repeat="0-1"><ruleref uri="#phrase_introductive"/></item>
+            <item><ruleref uri="#raison_reservation_variee"/></item>
+        </item>
+        <item>
+            <ruleref uri="#non_specifie"/>
+        </item>
+    </one-of>
+    <tag>out.objet = rules.latest().objet;</tag>
+</rule>
+
+
+<rule id="raison_reservation_variee">
+    <one-of>
+        <item>
+            <item repeat="0-1"><one-of><item>un</item><item>une</item></one-of></item>
+            <ruleref uri="#type_evenement"/>
+            <tag>out.objet = rules.latest().objet;</tag>
+        </item>
+    </one-of>
+</rule>
+
+<rule id="type_evenement">
+    <one-of>
+        <item>debat<tag>out.objet = "debat";</tag></item>
+        <item>discussion<tag>out.objet = "discussion";</tag></item>
+        <item>table ronde<tag>out.objet = "table ronde";</tag></item>
+        <item>conference<tag>out.objet = "conference";</tag></item>
+        <item>seminaire<tag>out.objet = "seminaire";</tag></item>
+        <item>atelier<tag>out.objet = "atelier";</tag></item>
+        <item>formation<tag>out.objet = "formation";</tag></item>
+        <item>presentation<tag>out.objet = "presentation";</tag></item>
+        <item>webinaire<tag>out.objet = "webinaire";</tag></item>
+        <item>evenement<tag>out.objet = "evenement";</tag></item>
+        <item>entretien<tag>out.objet = "entretien";</tag></item>
+        <item>session<tag>out.objet = "session";</tag></item>
+        <item>reunion<tag>out.objet = "reunion";</tag></item>
+        <item>cours<tag>out.objet = "cours";</tag></item>
+    </one-of>
+</rule>
+
+<rule id="phrase_introductive">
+    <one-of>
+        <item>c est pour</item>
+        <item>j organise</item>
+        <item>je souhaite reserver pour</item>
+        <item>je prevois</item>
+        <item>je mets en place</item>
+        <item>je programme</item>
+        <item>je voudrais organiser</item>
+        <item>je dois planifier</item>
+        <item>pour</item>
+        <item>il me faut</item>
+        <item>il est question de</item>
+    </one-of>
+</rule>
+
+
+<rule id="non_specifie" scope="public">
+    <item>non specifie<tag>out.objet = "non specifie";</tag></item>
+</rule>
+
+</grammar>

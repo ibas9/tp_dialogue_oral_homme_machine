@@ -1,0 +1,64 @@
+
+OptimTalk Grammar Tester (version 1.10)
+========================
+Copyright (c) 2004-2010 OptimSys, s.r.o., Czech Republic
+  http://www.optimsys.cz
+
+Testing grammar file:/C:/Documents and Settings/Isabelle/Mes documents/OPTIMTALK_NEW/chiffres_v2.grxml
+Enter an utternace or press Enter to finish:
+un
+Semantic result: {
+  nb: 1
+}
+Enter an utternace or press Enter to finish: 
+deux
+Semantic result: {
+  nb: 2
+}
+Enter an utternace or press Enter to finish: 
+trois
+Semantic result: {
+  nb: 3
+}
+Enter an utternace or press Enter to finish: 
+quatre
+Semantic result: {
+  nb: 4
+}
+Enter an utternace or press Enter to finish: 
+cinq
+Semantic result: {
+  nb: 5
+}
+Enter an utternace or press Enter to finish: 
+six
+Semantic result: {
+  nb: 6
+}
+Enter an utternace or press Enter to finish: 
+sept
+Semantic result: {
+  nb: 7
+}
+Enter an utternace or press Enter to finish: 
+huit
+Semantic result: {
+  nb: 8
+}
+Enter an utternace or press Enter to finish: 
+neuf
+Semantic result: {
+  nb: 9
+}
+Enter an utternace or press Enter to finish: 
+dix
+DOES NOT MATCH
+Enter an utternace or press Enter to finish: 
+onze
+DOES NOT MATCH
+Enter an utternace or press Enter to finish: 
+zero
+Semantic result: {
+  nb: 0
+}
+Enter an utternace or press Enter to finish: 

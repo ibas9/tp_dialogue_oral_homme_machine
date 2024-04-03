@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="confirmation_implicite" xml:lang="fr">
+
+<meta name="description" content="grammaire confirmation implicite sous dialogue"/>
+<meta name="author" content="Islem BASSOUMI"/>
+<meta name="copyright" content="3a SRI"/>
+
+<rule id="confirmation_implicite" scope="public">
+
+    <one-of>
+                <!-- le cas ou l utilisateur confirme la date en donnant l heure -->
+		<item >
+			<item repeat="0-1"><ruleref uri="grammaire_act_lang_confirmation_v2.grxml#oui" />  </item>
+			<item repeat="0-1"> a </item>
+			<item><ruleref uri="grammaire_horaire_v1.grxml#Horaire" /></item>
+			<tag>out.reponse = "dateConfirmee+heureEnregistree"
+				 out.heure = rules.latest().H ;
+				 out.minute = rules.latest().M ;
+				 out.nbMin = rules.latest().NTMN;
+				 out.text = rules.latest().text ;
+			</tag>
+		</item>
+
+                    <!-- le cas ou l utilisateur rejette la date en donnant une nouvelle  -->
+		<item>
+			<item repeat="0-1"><ruleref uri="grammaire_act_lang_confirmation_v2.grxml#non" />  </item>
+			<item repeat="0-1"> le </item>
+			<item><ruleref uri="grammaire_dates_v3.grxml#Date" /></item>
+            <tag>out.reponse = "AncienneDateAnnulle+nouvelleDateEnregistree";
+					out.numJour = rules.latest().nb_jour;
+					 out.numMois = rules.latest().num_mois;
+					 out.numAnnee = rules.latest().nb_annee;
+			</tag>
+		</item>
+
+
+            <!-- le cas ou l utilisateur rejette la date en disant non -->
+        <item>
+			<item repeat="0-1"><ruleref uri="grammaire_act_lang_confirmation_v2.grxml#non" />  </item>
+            <tag>out.reponse = "AncienneDateAnnulle";</tag>
+		</item>
+    </one-of>	
+</rule>
+</grammar>
